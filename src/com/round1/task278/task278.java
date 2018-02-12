@@ -2,22 +2,20 @@ package com.round1.task278;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class task278 {
     public static void main(String[] args) {
         BufferedReader readBuff;
-        File inputfile = new File("src\\com\\round1\\task278\\input.txt");
         try (BufferedWriter writeBuff = new BufferedWriter(new FileWriter("src\\com\\round1\\task278\\output.txt", false))) {
-            if (inputfile.exists()) try {
-                if ((inputfile.lastModified() / 1024) >= 256) {
-                    readBuff = new BufferedReader(new FileReader("src\\com\\round1\\task278\\input.txt"));
-                    String dNKSequence = readBuff.readLine();
-                    String evolutionDNKSequence = readBuff.readLine();
-                    writeBuff.write(String.valueOf(CheckEvolution(dNKSequence, evolutionDNKSequence)));
-
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+            readBuff = new BufferedReader(new FileReader("src\\com\\round1\\task278\\input.txt"));
+            String dNKSequence = readBuff.readLine();
+            String evolutionDNKSequence = readBuff.readLine();
+            if (checkEvolutionV2(dNKSequence, evolutionDNKSequence)) {
+                writeBuff.write("YES");
+            } else {
+                writeBuff.write("NO");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -25,18 +23,29 @@ public class task278 {
 
     }
 
-    private static boolean CheckEvolution(String dNKSequence, String evolutionDNKSequence) {
-        ArrayList<String> buffArray = new ArrayList<>();
-        Integer startOfSubstring = 0;
-        for (int j = 0; j < dNKSequence.length(); j++) {
-            for (int i = startOfSubstring; i < evolutionDNKSequence.length(); i++) {
-                if (dNKSequence.charAt(j) == evolutionDNKSequence.charAt(i)) {
-                    buffArray.add(evolutionDNKSequence.substring(startOfSubstring, i + 1));
-                    startOfSubstring = i;
-                    break;
-                }
-            }
+//    private static boolean checkEvolution(String dNKSequence, String evolutionDNKSequence) {
+//        int evolutionCount = 0;
+//        Integer startOfSubstring = 0;
+//        for (int j = 0; j < dNKSequence.length(); j++) {
+//            for (int i = startOfSubstring; i < evolutionDNKSequence.length(); i++) {
+//                if (dNKSequence.charAt(j) == evolutionDNKSequence.charAt(i)) {
+//                    evolutionCount++;
+//                    startOfSubstring = i;
+//                    break;
+//                }
+//            }
+//        }
+//        return evolutionCount == dNKSequence.length();
+//    }
+
+    private static boolean checkEvolutionV2(String dNKSequence, String evolutionDNKSequence) {
+        StringBuilder patternLine = new StringBuilder("^(.+)?");
+        for (int i = 0 ; i<dNKSequence.length();i++){
+                patternLine.append(dNKSequence.charAt(i)).append("(.+)?");
         }
-        return buffArray.size() == dNKSequence.length();
+        patternLine.append("$");
+        Pattern patterrn = Pattern.compile(patternLine.toString());
+        Matcher match = patterrn.matcher(evolutionDNKSequence);
+        return match.matches();
     }
 }
